@@ -3,11 +3,12 @@
 > Plik generowany przez `python3 ~/LLM-workspace/ai/narzedzia/zgloszenia/dziennik.py --root .`. **Nie edytuj ręcznie.**
 > Źródłem prawdy są nagłówki plików w `zgloszenia/`.
 
-## Otwarte (4)
+## Otwarte (5)
 
 | ID | Tytuł | Status | Typ | Priorytet | Otwarte |
 |---|---|---|---|---|---|
 | [2026-11-25-05](zgloszenia/otwarte/2026-11-25-05-wolny-obraz-vm-virgl.md) | Wolny obraz VM w virt-viewerze: QXL → virtio-gpu z virgl | w-toku | zmiana | sredni | 2026-11-25 |
+| [2026-11-26-03](zgloszenia/otwarte/2026-11-26-03-druga-vm-gotowy-shell.md) | Druga VM (nixos-shell) do testu gotowego shella, zamrożenie VM nixos | w-toku | zmiana | sredni | 2026-11-26 |
 | [2026-11-25-04](zgloszenia/otwarte/2026-11-25-04-plan-migracji-laptopa.md) | Plan migracji prywatnego laptopa z Debiana na NixOS + Hyprland | nowe | ustalenie | sredni | 2026-11-25 |
 | [2026-11-26-02](zgloszenia/otwarte/2026-11-26-02-graficzny-ekran-logowania-regreet-plymouth.md) | Graficzny ekran logowania (ReGreet) i ekran startu (Plymouth) | czeka | zmiana | niski | 2026-11-26 |
 | [2026-11-25-03](zgloszenia/otwarte/2026-11-25-03-schowek-host-vm.md) | Wspólny schowek host-VM (SPICE) | nowe | zmiana | niski | 2026-11-25 |
