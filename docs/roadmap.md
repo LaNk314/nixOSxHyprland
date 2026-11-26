@@ -15,7 +15,7 @@ Kolumna **NixOS** podaje moduł, jeśli istnieje. Bez modułu wystarczy pakiet w
 | ✅ | Portale XDG (udostępnianie ekranu, okna wyboru plików) | xdg-desktop-portal-hyprland + -gtk | ustawia `programs.hyprland` | sprawdzić okno wyboru plików (portal gtk) |
 | ✅ | Blokada ekranu | hyprlock | `programs.hyprlock.enable` | SUPER+L; moduł dodaje PAM |
 | 🔶 | Bezczynność: wygaszanie, blokada, uśpienie | hypridle | pakiet + autostart (`services.hypridle` wymaga `graphical-session.target`) | blokada po 5 min; DPMS i suspend 💻 zakomentowane |
-| ⬜ | Menu zasilania (wyloguj / restart / wyłącz) | wlogout, skrypt w fuzzel | pakiet | dziś jest tylko SUPER+M (exit) |
+| ✅ | Menu zasilania (wyloguj / restart / wyłącz) | wlogout | pakiet | SUPER+M, ⏻ w waybarze; uśpienie 💻 dodać na laptopie |
 | ⬜ | Automatyczny start aplikacji XDG (`~/.config/autostart`) | — | `hl.exec_cmd` w `hyprland.start` | Hyprland nie obsługuje tego sam |
 
 ## 2. Wygląd i spójność

@@ -26,6 +26,7 @@ Plan rozbudowy: [docs/roadmap.md](docs/roadmap.md).
 | Tapeta | swaybg (`~/tapeta.jpg`) | autostart |
 | Zrzuty ekranu | grim + slurp → wl-copy (Print, SHIFT+Print) | |
 | Blokada ekranu | hyprlock (SUPER+L, `loginctl lock-session`), hypridle: blokada po 5 min; wygaszanie (DPMS) wyłączone w VM | `programs.hyprlock`, `dotfiles/.config/hypr/hyprlock.conf`, `hypridle.conf`; hypridle z autostartu, nie z systemd |
+| Menu zasilania | wlogout (SUPER+M, przycisk ⏻ w waybarze): zablokuj, wyloguj, uruchom ponownie, wyłącz; styl i ikony domyślne z pakietu | `dotfiles/.config/wlogout/layout` |
 | Pliki | nautilus (SUPER+E) z gvfs (kosz, nośniki, sieć) i tumbler (miniatury), yazi (TUI) | `services.gvfs`, `services.tumbler` |
 | Terminal | kitty (SUPER+Q) | `dotfiles/.config/kitty/kitty.conf` |
 | Przeglądarka | firefox | |
@@ -42,8 +43,9 @@ flowchart LR
         sshd[sshd]
         greetd[greetd + tuigreet] --> hypr[Hyprland 0.55<br/>hyprland.lua]
         hypr --> waybar & mako & swaybg & hypridle
+        waybar -. ⏻ .-> wlogout
         hypridle -- 5 min --> hyprlock
-        hypr -. skróty .-> fuzzel & kitty & nautilus & grim[grim/slurp]
+        hypr -. skróty .-> fuzzel & kitty & nautilus & grim[grim/slurp] & wlogout
         pw[pipewire] --- waybar
     end
     cfg["/etc/nixos/configuration.nix"] -- nixos-rebuild switch --> VM
@@ -72,7 +74,7 @@ sudo nixos-rebuild switch                   # zastosowanie zmian (nowa generacja
   Odświeżenie kopii z hosta (nowy program: dopisz jego katalog do listy w `tar`):
   ```bash
   scp nixos:/etc/nixos/{configuration,hardware-configuration}.nix nixos/
-  ssh nixos 'cd ~ && tar cf - --exclude="*.swp" .config/hypr .config/waybar .config/kitty .vimrc' | tar xf - -C dotfiles
+  ssh nixos 'cd ~ && tar cf - --exclude="*.swp" .config/hypr .config/waybar .config/kitty .config/wlogout .vimrc' | tar xf - -C dotfiles
   ```
 - **Wycofanie zmiany systemu:** wybierz poprzednią generację w menu systemd-boot albo uruchom `sudo nixos-rebuild switch --rollback`.
 - `hardware-configuration.nix` dotyczy tej VM. Na laptopie wygeneruj własny (`nixos-generate-config`).
@@ -93,6 +95,7 @@ sudo nixos-rebuild switch                   # zastosowanie zmian (nowa generacja
 | `hyprctl dispatch dpms off` nie działa | Hyprland 0.55 (Lua): `hyprctl dispatch 'hl.dsp.dpms({ action = "off" })'` (`on`, bez argumentu: przełącz). |
 | hypridle nie startuje jako `services.hypridle` | Usługa czeka na `graphical-session.target`, którego `start-hyprland` nie uruchamia. Startuje z autostartu w `hyprland.lua`. |
 | hyprlock / hypridle: składnia configu | Nadal hyprlang (`.conf`), w przeciwieństwie do `hyprland.lua`. |
+| wlogout: własny `layout`, ale brak ikon | Ikony są przypisane do `label` (`lock`, `logout`, `reboot`, `shutdown`, `suspend`, `hibernate`) w domyślnym `style.css` pakietu. Nie zmieniaj `label`. Własny `style.css` musi wskazywać ikony w `/nix/store/…-wlogout-*/share/wlogout/icons`. |
 | Kopiowanie tekstu host↔VM | Wspólny schowek nie jest skonfigurowany. Używaj `ssh nixos` i `scp`. |
 | virt-viewer: „Connected to graphic server” bez obrazu | SPICE z `gl enable='yes'` nie działa ze sterownikiem NVIDII na hoście. Używaj `egl-headless` + zwykłego SPICE. |
 | Wolny obraz, `Renderer: virgl (LLVMPIPE …)` w logu Hyprlanda | virgl działa, ale QEMU na hoście renderuje programowo zamiast na GPU. Zob. zgłoszenie 2026-11-25-05. |

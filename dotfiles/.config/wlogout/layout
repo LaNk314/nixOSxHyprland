@@ -1,0 +1,4 @@
+{ "label" : "lock",     "action" : "loginctl lock-session",          "text" : "Zablokuj",         "keybind" : "l" }
+{ "label" : "logout",   "action" : "hyprctl dispatch 'hl.dsp.exit()'", "text" : "Wyloguj",          "keybind" : "e" }
+{ "label" : "reboot",   "action" : "systemctl reboot",               "text" : "Uruchom ponownie", "keybind" : "r" }
+{ "label" : "shutdown", "action" : "systemctl poweroff",             "text" : "Wyłącz",           "keybind" : "s" }

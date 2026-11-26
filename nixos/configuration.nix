@@ -78,6 +78,7 @@
     brightnessctl
     playerctl
     hypridle   # bezczynność; startowany z hyprland.lua
+    wlogout
   ];
 
    programs.vim = {

@@ -6,7 +6,7 @@
 
   "modules-left": ["hyprland/workspaces"],
   "modules-center": ["hyprland/window"],
-  "modules-right": ["pulseaudio", "cpu", "memory", "clock"],
+  "modules-right": ["pulseaudio", "cpu", "memory", "clock", "custom/power"],
 
   "hyprland/window": { "max-length": 60 },
 
@@ -17,5 +17,6 @@
   },
   "cpu": { "format": "CPU {usage}%", "interval": 5 },
   "memory": { "format": "RAM {percentage}%", "interval": 5 },
-  "clock": { "format": "{:%H:%M %d.%m}", "tooltip-format": "{:%A, %d %B %Y}" }
+  "clock": { "format": "{:%H:%M %d.%m}", "tooltip-format": "{:%A, %d %B %Y}" },
+  "custom/power": { "format": "⏻", "tooltip": false, "on-click": "pidof wlogout || wlogout -b 4" }
 } 

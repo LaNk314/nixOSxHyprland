@@ -28,7 +28,7 @@ window#waybar {
 
 #window { color: #a6adc8; }
 
-#pulseaudio, #cpu, #memory, #clock {
+#pulseaudio, #cpu, #memory, #clock, #custom-power {
   padding: 0 10px;
   margin: 4px 3px;
   background: #313244;
@@ -41,4 +41,4 @@ window#waybar {
 
 #pulseaudio.muted { color: #f38ba8; }
 
-
+#custom-power { color: #f38ba8; }
