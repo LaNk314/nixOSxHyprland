@@ -8,6 +8,7 @@
 | MAC | 52:54:00:0c:cb:b0 (`enp1s0`) |
 | Logowanie | `ssh nixos` → `lank@192.168.122.154`, tylko klucz ed25519; lokalnie greetd/ReGreet (graficzny) |
 | Lokalizacja | VM KVM/QEMU na stacji roboczej; 4 vCPU, 3,8 GiB RAM, dysk `vda` 40 GB (ESP 1 GB vfat + 39 GB ext4) |
+| Druga VM | `nixos-shell`: klon `nixos` do testu gotowego shella. IP 192.168.122.179, MAC 52:54:00:d5:ac:73, `ssh nixos-shell`, SPICE `127.0.0.1:5901`. Przebudowa: `sudo nixos-rebuild switch --flake /etc/nixos#nixos`. VM `nixos` zamrożona, snapshot `przed-shell` |
 
 Testowa VM z **NixOS 26.05 (Yarara)** i **Hyprland 0.55.4**. Służy do przygotowania konfiguracji przed migracją prywatnego laptopa z Debiana.
 

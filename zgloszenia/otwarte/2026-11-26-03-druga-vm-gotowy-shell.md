@@ -30,6 +30,8 @@ Wstępna rekomendacja: DMS. Jest w nixpkgs, ma panel ustawień zbliżony do GNOM
 - 2026-11-26: VM `nixos` wyłączona, utworzony snapshot `przed-shell` (wewnętrzny, qcow2). Powrót: `virsh -c qemu:///system snapshot-revert nixos przed-shell`.
 - 2026-11-26: `virt-clone --original nixos --name nixos-shell --auto-clone` utworzył dysk `nixos-shell.qcow2` i NVRAM `nixos-shell_VARS.fd`. Nowy MAC to `52:54:00:d5:ac:73`. SPICE klona przestawiony na `127.0.0.1:5901` (`virt-xml --edit type=spice --graphics port=5901`), żeby obie VM mogły działać jednocześnie.
 - 2026-11-26: `virt-sysprep --operations machine-id` uruchomiony jako `lank` kończy się błędem `Permission denied`, bo libguestfs otwiera plik obrazu bezpośrednio, a `/var/lib/libvirt/images` jest dostępne tylko dla roota. Polecenie trzeba wykonać przez `sudo`.
+- 2026-11-26: `sudo` uruchomione przez `!` w Claude Code nie ma TTY i nie może zapytać o hasło. Dlatego machine-id wygenerowano w samym klonie (oryginał był wyłączony, więc nie było konfliktu DHCP): `sudo rm /etc/machine-id && sudo systemd-machine-id-setup`. Hostname ustawiono przez `sed` w `configuration.nix` i `nixos-rebuild switch --flake /etc/nixos#nixos`, potem zrobiono reboot.
+- 2026-11-26: Weryfikacja: hostname `nixos-shell`, machine-id `14aa5e20…` (oryginał `42a58ba0…`), IP `192.168.122.179` (lease DHCP dla nowego MAC). Alias `ssh nixos-shell` dodany w `~/.ssh/config` hosta.
 
 ## Przyczyna źródłowa
 
@@ -39,9 +41,9 @@ Nie dotyczy (zmiana).
 
 - [x] Wyłączyć `nixos` i zrobić snapshot `przed-shell`
 - [x] Sklonować VM do `nixos-shell`, SPICE na porcie 5901
-- [ ] Wyzerować `/etc/machine-id` w klonie (`sudo virt-sysprep ... --operations machine-id`); systemd wygeneruje nowy przy pierwszym starcie
-- [ ] Uruchomić klon, odczytać IP, dodać alias `ssh nixos-shell`
-- [ ] Hostname klona `nixos-shell` (`networking.hostName` w VM, `nixos-rebuild switch --flake /etc/nixos#nixos`)
+- [x] Nowy `/etc/machine-id` w klonie (`systemd-machine-id-setup` w VM)
+- [x] Uruchomić klon, odczytać IP (`192.168.122.179`), dodać alias `ssh nixos-shell`
+- [x] Hostname klona `nixos-shell` (`networking.hostName` w VM, `nixos-rebuild switch --flake /etc/nixos#nixos`)
 - [ ] Ustalić sposób przechowywania kopii configu klona w repo (katalog lub gałąź)
 - [ ] Wybrać i zainstalować shell (osobne zgłoszenie)
 
