@@ -7,7 +7,7 @@ priorytet: sredni
 otwarte: 2026-11-25
 zamkniete:
 przyczyna:
-powiazane: [2026-11-25-01, 2026-11-25-02]
+powiazane: [2026-11-25-01, 2026-11-25-02, 2026-11-26-02]
 ---
 
 ## Opis
@@ -18,7 +18,7 @@ Docelowo konfiguracja z VM ma trafić na prywatny laptop, który obecnie działa
 
 - [ ] Inwentaryzacja Debiana: zainstalowane programy, usługi, dane w `~`, klucze SSH/GPG, konfiguracje (dotfiles)
 - [ ] Sprzęt laptopa: GPU (sterowniki pod Hyprland), Wi-Fi, Bluetooth, podświetlenie, touchpad, zarządzanie energią (np. `services.power-profiles-daemon` lub `tlp`)
-- [ ] Partycjonowanie i szyfrowanie dysku (LUKS?), swap, hibernacja
+- [ ] Partycjonowanie i szyfrowanie dysku (decyzja 2026-11-26: LUKS; Plymouth wymaga `boot.initrd.systemd.enable`, patrz 2026-11-26-02), swap, hibernacja
 - [ ] Struktura configu: jeden `configuration.nix` czy moduły, flakes czy kanały, Home Manager dla dotfiles
 - [ ] Backup danych z Debiana i test odtworzenia przed instalacją
 - [ ] Brakujące elementy środowiska: blokada ekranu (hyprlock + hypridle), polkit agent, Bluetooth/sieć w waybarze, układ klawiatury PL
