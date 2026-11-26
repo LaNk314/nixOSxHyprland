@@ -14,6 +14,11 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  boot.plymouth.enable = true;
+  boot.consoleLogLevel = 3;
+  boot.initrd.verbose = false;
+  boot.kernelParams = [ "quiet" "splash" "udev.log_level=3" "systemd.show_status=auto" ];
+
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -104,7 +109,9 @@
 
   hardware.graphics.enable = true;
 
-  environment.sessionVariables.NIXOS_OZONE_WL = "1";
+  environment.sessionVariables = { 
+    NIXOS_OZONE_WL = "1";
+  };
 
   fonts.packages = with pkgs; [
     noto-fonts 
@@ -116,13 +123,7 @@
     pulse.enable = true;
   };
 
-  services.greetd = {
-    enable = true;
-    settings.default_session = {
-      command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd start-hyprland";
-      user = "greeter";
-    };
-  };
+  programs.regreet.enable = true;
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

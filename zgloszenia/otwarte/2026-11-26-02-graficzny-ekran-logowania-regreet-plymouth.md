@@ -1,7 +1,7 @@
 ---
 id: 2026-11-26-02
 tytul: Graficzny ekran logowania (ReGreet) i ekran startu (Plymouth)
-status: nowe
+status: czeka
 typ: zmiana
 priorytet: niski
 otwarte: 2026-11-26
@@ -34,6 +34,7 @@ Cel:
   2. **Kursor jest odwrócony do góry nogami w ReGreet.** `cage` (wlroots) używa sprzętowego kursora na virtio-gpu z virgl. Hipoteza: znany problem z płaszczyzną kursora w wirtualnym GPU. Obejście: `WLR_NO_HARDWARE_CURSORS=1`. Hyprland (aquamarine, nie wlroots) nie ma tego problemu.
 - 2026-11-26, korekta pkt 2: kursor był odwrócony także w menu systemd-boot, więc nie odpowiadał za to cage. Po pełnym wyłączeniu VM i ponownym starcie QEMU kursor jest prosty. Przyczyną był stary obraz kursora w działającym procesie QEMU/SPICE (virtio-gpu + virgl), który przetrwał zwykły reboot gościa. `WLR_NO_HARDWARE_CURSORS=1` prawdopodobnie jest zbędne, do sprawdzenia przez usunięcie.
 - 2026-11-26: ReGreet zapamiętuje ostatnią sesję (`/var/lib/regreet/state.toml`: `lank = "Hyprland"`). Log logowania o 13:08 pokazuje `sess_id: Some("Hyprland")` bez wyboru przez użytkownika, czyli wystarczy podać hasło. Pierwszy raz sesję trzeba było wybrać ręcznie, bo nie było jeszcze pliku stanu.
+- 2026-11-26: Usunięto `WLR_NO_HARDWARE_CURSORS`, kursor pozostał prosty, więc zmienna była zbędna. ReGreet poprawnie podpowiada ostatnią sesję, ale logowanie ma dwa kroki (użytkownik i sesja → Login, potem hasło). Wynika to z budowy ReGreet (sesja greetd/PAM tworzona przed pytaniem o hasło) i nie da się tego zmienić w konfiguracji. Rozważane alternatywy z jednym formularzem: nwg-hello (greetd, bez targetu Stylixa), SDDM. Użytkownik odłożył decyzję, zgłoszenie czeka.
 
 ## Przyczyna źródłowa
 
@@ -43,12 +44,14 @@ tuigreet to greeter tekstowy (TUI), który działa na TTY. Konsola tekstowa nie 
 
 Zmiany w `/etc/nixos/configuration.nix` w VM wykonuje użytkownik:
 
-- [ ] Usunąć blok `settings.default_session` (tuigreet) z `services.greetd`. Jeśli go zostawić, wystąpi konflikt z `programs.regreet`, który sam ustawia polecenie greetd (`cage … regreet`).
-- [ ] Dodać `programs.regreet.enable = true;`. Kolory, font i kursor ustawi target Stylixa.
-- [ ] Dodać Plymouth i cichy rozruch: `boot.plymouth.enable = true;`, `boot.consoleLogLevel = 3;`, `boot.initrd.verbose = false;`, `boot.kernelParams = [ "quiet" "splash" "udev.log_level=3" "systemd.show_status=auto" ];`
-- [ ] `nixos-rebuild switch --flake /etc/nixos#nixos`, potem reboot i sprawdzenie
-- [ ] Jeśli splash nie pojawia się w VM: `boot.initrd.kernelModules = [ "virtio_gpu" ];` (wczesny KMS)
-- [ ] Odświeżyć kopię w repo, zaktualizować README (Logowanie, Komponenty, Troubleshooting)
+- [x] Usunąć blok `settings.default_session` (tuigreet) z `services.greetd`. Jeśli go zostawić, wystąpi konflikt z `programs.regreet`, który sam ustawia polecenie greetd (`cage … regreet`).
+- [x] Dodać `programs.regreet.enable = true;`. Kolory, font i kursor ustawi target Stylixa.
+- [x] Dodać Plymouth i cichy rozruch: `boot.plymouth.enable = true;`, `boot.consoleLogLevel = 3;`, `boot.initrd.verbose = false;`, `boot.kernelParams = [ "quiet" "splash" "udev.log_level=3" "systemd.show_status=auto" ];`
+- [x] `nixos-rebuild switch --flake /etc/nixos#nixos`, potem reboot i sprawdzenie
+- [ ] (opcjonalnie) Jeśli splash nie pojawia się w VM: `boot.initrd.kernelModules = [ "virtio_gpu" ];` (wczesny KMS)
+- [x] Odświeżyć kopię w repo, zaktualizować README (Logowanie, Komponenty, Troubleshooting)
+- [ ] Decyzja: zostać przy dwóch krokach ReGreet czy przejść na greeter z jednym formularzem (nwg-hello)
+- [ ] `programs.hyprland.withUWSM = false;`, żeby na liście sesji była tylko „Hyprland”
 
 Na laptopie z LUKS: `boot.initrd.systemd.enable = true;`. Wtedy Plymouth pokaże graficzne pole na hasło do dysku (do zgłoszenia 2026-11-25-04).
 

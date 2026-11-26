@@ -6,7 +6,7 @@
 |---|---|
 | IP | 192.168.122.154/24 (sieć `default` libvirt, NAT) |
 | MAC | 52:54:00:0c:cb:b0 (`enp1s0`) |
-| Logowanie | `ssh nixos` → `lank@192.168.122.154`, tylko klucz ed25519; lokalnie greetd/tuigreet |
+| Logowanie | `ssh nixos` → `lank@192.168.122.154`, tylko klucz ed25519; lokalnie greetd/ReGreet (graficzny) |
 | Lokalizacja | VM KVM/QEMU na stacji roboczej; 4 vCPU, 3,8 GiB RAM, dysk `vda` 40 GB (ESP 1 GB vfat + 39 GB ext4) |
 
 Testowa VM z **NixOS 26.05 (Yarara)** i **Hyprland 0.55.4**. Służy do przygotowania konfiguracji przed migracją prywatnego laptopa z Debiana.
@@ -18,7 +18,8 @@ Plan rozbudowy: [docs/roadmap.md](docs/roadmap.md).
 | Warstwa | Komponent | Konfiguracja |
 |---|---|---|
 | System | NixOS 26.05, systemd-boot, NetworkManager; flakes, nixpkgs przypięty w `flake.lock` (zamiast kanału) | `nixos/flake.nix`, `nixos/configuration.nix` |
-| Logowanie | greetd + tuigreet → `start-hyprland` | `services.greetd` |
+| Ekran startu | Plymouth (motyw i kolory ze Stylixa), cichy rozruch (`quiet splash`, `consoleLogLevel = 3`) | `boot.plymouth`, `boot.kernelParams` |
+| Logowanie | greetd + ReGreet (GTK w `cage`; kolory, font i kursor ze Stylixa). Ostatni użytkownik i sesja w `/var/lib/regreet/state.toml`. Dwa kroki: użytkownik i sesja → Login (Enter), potem hasło | `programs.regreet` |
 | Kompozytor | Hyprland 0.55.4 (config Lua), XWayland | `dotfiles/.config/hypr/hyprland.lua` |
 | Pasek | waybar | `dotfiles/.config/waybar/` |
 | Launcher | fuzzel (SUPER+R); config i kolory ze Stylixa | `programs.fuzzel` w `home.nix` |
@@ -45,7 +46,7 @@ flowchart LR
     host[Host<br/>repo nixOSxHyprland] -- "ssh nixos (klucz)" --> sshd
     subgraph VM [VM NixOS 26.05 / KVM]
         sshd[sshd]
-        greetd[greetd + tuigreet] --> hypr[Hyprland 0.55<br/>hyprland.lua]
+        greetd[greetd + ReGreet] --> hypr[Hyprland 0.55<br/>hyprland.lua]
         hypr --> waybar & mako & swaybg & hypridle
         waybar -. ⏻ .-> wlogout
         hypridle -- 5 min --> hyprlock
@@ -98,6 +99,8 @@ sudo nix flake update --flake /etc/nixos    # aktualizacja nixpkgs (potem rebuil
 | Rozdzielczość 800x600 w VM | Ustaw tryb w bloku `hl.monitor({ … mode = "1920x1080@60", scale = 1 })`. Dostępne tryby: `hyprctl monitors` lub `cat /sys/class/drm/card*-*/modes` |
 | Nie ma `hyprland.conf` | Hyprland ≥0.55 używa `hyprland.lua`, a składnia hyprlang jest przestarzała. |
 | `nixos-rebuild` nie widzi zmian po `:w` w vimie | `sudoedit` edytuje kopię tymczasową i przenosi ją do `/etc/nixos/` dopiero po zamknięciu edytora. Zapisz i wyjdź (`:wq`), potem uruchom rebuild. |
+| Po zalogowaniu w ReGreet pojawia się TTY (bash) zamiast Hyprlanda | Nie wybrano sesji (przy pierwszym starcie nie ma `state.toml`). Wybierz z listy „Hyprland”, ReGreet ją zapamięta. Log: `/var/log/regreet/log`. |
+| Kursor odwrócony do góry nogami (nawet w menu bootowania) | Stary obraz kursora w procesie QEMU (virtio-gpu + virgl) przetrwał reboot gościa. Wyłącz VM całkowicie (`virsh -c qemu:///system shutdown nixos`) i uruchom ponownie. |
 | Czarny ekran po zmianie greetd | Przełącz na inny TTY (Ctrl+Alt+F2, w virt-managerze „Send key”) albo wybierz poprzednią generację w bootloaderze. |
 | Po wygaszeniu ekranu (DPMS off/on) virt-viewer nie pokazuje obrazu, Hyprland działa | virgl + egl-headless nie wznawia obrazu po DPMS. Restart sesji: `ssh nixos 'loginctl terminate-user lank'`. Dlatego listener DPMS w `hypridle.conf` jest w VM zakomentowany. |
 | `hyprctl dispatch dpms off` nie działa | Hyprland 0.55 (Lua): `hyprctl dispatch 'hl.dsp.dpms({ action = "off" })'` (`on`, bez argumentu: przełącz). |
