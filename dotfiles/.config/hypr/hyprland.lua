@@ -15,8 +15,8 @@
 
 -- You can (and should!!) split this configuration into multiple files
 -- Create your files separately and then require them like this:
--- require("myColors")
-
+local c = require("colors")   -- ~/.config/hypr/colors.lua (Home Manager)
+local function rgb(hex, alpha) return "rgba(" .. hex .. (alpha or "ff") .. ")" end
 
 ------------------
 ---- MONITORS ----
@@ -99,8 +99,8 @@ hl.config({
         border_size = 2,
 
         col = {
-            active_border   = { colors = {"rgba(33ccffee)", "rgba(00ff99ee)"}, angle = 45 },
-            inactive_border = "rgba(595959aa)",
+          active_border   = { colors = { rgb(c.base0D, "ee"), rgb(c.base0B, "ee") }, angle = 45 },
+          inactive_border = rgb(c.base03, "aa"),
         },
 
         -- Set to true to enable resizing windows by clicking and dragging on borders and gaps

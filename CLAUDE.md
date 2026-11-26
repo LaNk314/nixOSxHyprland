@@ -11,6 +11,7 @@ Wstępna konfiguracja NixOS + Hyprland na maszynie wirtualnej (KVM). Cel: doprac
 - Repo: `git@github.com:LaNk314/nixOSxHyprland.git`, gałąź `main`.
 - `nixos/` (= `/etc/nixos`) i `dotfiles/` (= `~`, ta sama struktura katalogów) to **kopie** plików z VM. Źródłem prawdy jest VM, dopóki nie zostanie ustalone inaczej. Po zmianie w VM odśwież kopię (polecenia w `README.md`, Backup).
 - Hyprland ≥0.55 ma konfigurację w **Lua** (`~/.config/hypr/hyprland.lua`, `hl.monitor`, `hl.bind`, `hl.on("hyprland.start", …)`). Nie podawaj składni hyprlang (`hyprland.conf`, `exec-once`, `monitor=`). W razie wątpliwości sprawdź na wiki.hypr.land.
+- Kolory tylko z palety Stylix (`nixos/stylix.nix`, pliki `colors.*` generowane w `nixos/home.nix`). W configach nie wpisuj wartości hex, używaj nazw base16 (README, Szybki start). Home Manager nie przejmuje ręcznie edytowanych dotfiles.
 - Użytkownik dopiero poznaje NixOS: tłumacz krótko, dlaczego coś robimy.
 
 - `README.md`: aktualny stan systemu, bez historii.

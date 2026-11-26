@@ -1,0 +1,35 @@
+@import "colors.css";
+
+* {
+  background-image: none;
+  box-shadow: none;
+  font-family: "JetBrainsMono Nerd Font", monospace;
+}
+
+window { background-color: alpha(@base00, 0.85); }
+
+button {
+  margin: 8px;
+  border-radius: 12px;
+  border: 2px solid @base02;
+  color: @base05;
+  background-color: @base01;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 25%;
+}
+
+button:focus, button:active, button:hover {
+  background-color: @base02;
+  border-color: @base0B;
+  color: @base0B;
+  outline-style: none;
+}
+
+#shutdown:focus, #shutdown:hover,
+#reboot:focus, #reboot:hover { border-color: @base08; color: @base08; }
+
+#lock     { background-image: image(url("/home/lank/.config/wlogout/icons/lock.png")); }
+#logout   { background-image: image(url("/home/lank/.config/wlogout/icons/logout.png")); }
+#reboot   { background-image: image(url("/home/lank/.config/wlogout/icons/reboot.png")); }
+#shutdown { background-image: image(url("/home/lank/.config/wlogout/icons/shutdown.png")); }

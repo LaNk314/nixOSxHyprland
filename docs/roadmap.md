@@ -24,12 +24,12 @@ Kolumna **NixOS** podaje moduł, jeśli istnieje. Bez modułu wystarczy pakiet w
 |---|---|---|---|---|
 | 🔶 | Pasek | waybar | pakiet / `programs.waybar.enable` | brak modułów: sieć, bluetooth, bateria 💻, tray, język klawiatury |
 | ✅ | Tapeta | swaybg | | alternatywy: hyprpaper, swww (animacje) |
-| ⬜ | Motyw GTK (jasny/ciemny) | adw-gtk3, catppuccin-gtk | pakiet + `gsettings`/dconf albo Home Manager | dziś aplikacje GTK mogą wyglądać „surowo” |
-| ⬜ | Motyw Qt zgodny z GTK | qt6ct, kvantum | `qt.enable`, `qt.platformTheme`, `qt.style` | |
+| ✅ | Motyw GTK (jasny/ciemny) | adw-gtk3, catppuccin-gtk | Stylix (target `gtk` w HM) | adw-gtk3 + kolory Everforest |
+| 🔶 | Motyw Qt zgodny z GTK | qt6ct, kvantum | Stylix (target `qt`) | `QT_STYLE_OVERRIDE` nie trafia do sesji Hyprlanda; sprawdzić przy pierwszej aplikacji Qt |
 | ⬜ | Ikony | papirus-icon-theme | pakiet | |
-| ⬜ | Kursor (motyw + rozmiar, także w XWayland) | bibata-cursors, hyprcursor | `XCURSOR_THEME/SIZE`, `HYPRCURSOR_*` | |
-| 🔶 | Fonty i emoji | noto, noto-emoji, nerd-fonts | `fonts.packages`, `fonts.fontconfig.defaultFonts` | brak emoji i domyślnych krojów |
-| ⬜ | Jednolity motyw kolorów dla wszystkiego | stylix, catppuccin/nix | flake | wygodne, ale wymaga flakes / Home Managera |
+| ✅ | Kursor (motyw + rozmiar, także w XWayland) | bibata-cursors, hyprcursor | `stylix.cursor` | Bibata-Modern-Classic 24 przez `~/.icons/default` |
+| ✅ | Fonty i emoji | noto, noto-emoji, nerd-fonts | `stylix.fonts` | Noto Sans/Serif, JetBrainsMono Nerd Font, Noto Color Emoji |
+| ✅ | Jednolity motyw kolorów dla wszystkiego | stylix, catppuccin/nix | `/etc/nixos/stylix.nix` | Everforest; własne configi dołączają pliki `colors.*` z HM |
 | ⬜ | Animacje, zaokrąglenia, blur, gapy | — | `hyprland.lua` | dopracowanie wyglądu |
 | ⬜ | Skalowanie HiDPI 💻 | — | `hl.monitor({ scale = … })` | na laptopie np. 1.25 / 1.5 |
 
@@ -138,7 +138,7 @@ Kolumna **NixOS** podaje moduł, jeśli istnieje. Bez modułu wystarczy pakiet w
 |---|---|---|---|---|
 | ⬜ | Przeglądarka | firefox, chromium | `programs.firefox.enable` | |
 | ⬜ | Edytor tekstu GUI / IDE | vscodium, gnome-text-editor | pakiet | |
-| ✅ | Terminal | kitty | | brak własnego configu |
+| ✅ | Terminal | kitty | | kolory z `colors.conf` (HM) |
 | ⬜ | Kalkulator, monitor systemu | qalculate, btop, mission-center | pakiet | |
 | ⬜ | Komunikatory / poczta | thunderbird, signal-desktop… | pakiet | lista z Debiana (2026-11-25-04) |
 | ⬜ | Menedżer haseł | keepassxc, bitwarden | pakiet | |
@@ -163,8 +163,8 @@ Kolumna **NixOS** podaje moduł, jeśli istnieje. Bez modułu wystarczy pakiet w
 | | Funkcja | Popularne wybory | Uwagi |
 |---|---|---|---|
 | ⬜ | Config w repo jako źródło prawdy (zamiast kopii z VM) | symlink `/etc/nixos` → repo albo `nixos-rebuild --flake` | dziś repo trzyma tylko kopie |
-| ⬜ | Flakes (przypięte wersje, powtarzalność) | `nix.settings.experimental-features` | |
-| ⬜ | Home Manager (dotfiles deklaratywnie) | moduł NixOS | hyprland.lua, waybar, kitty generowane z Nixa |
+| ✅ | Flakes (przypięte wersje, powtarzalność) | `nix.settings.experimental-features` | `/etc/nixos/flake.nix` + `flake.lock` |
+| 🔶 | Home Manager (dotfiles deklaratywnie) | moduł NixOS | jest, ale zarządza tylko plikami generowanymi (kolory, GTK, mako, fuzzel); ręczne configi zostają zwykłymi plikami |
 | ⬜ | Podział na moduły | `imports = [ ./desktop.nix ./laptop.nix … ]` | wspólna baza VM + laptop |
 | ⬜ | Dwa hosty w jednym repo (VM, laptop) | flake `nixosConfigurations.<host>` | VM zostaje jako środowisko testowe |
 
@@ -173,5 +173,5 @@ Kolumna **NixOS** podaje moduł, jeśli istnieje. Bez modułu wystarczy pakiet w
 1. **Porządki:** 2026-11-25-02 (SUPER+R, gvfs, playerctl, brightnessctl).
 2. **Codzienna używalność:** układ PL, polkit, keyring, blokada + hypridle, menu zasilania, pavucontrol, historia schowka, OSD.
 3. **Wygląd:** motyw GTK/Qt, ikony, kursor, fonty i emoji, rozbudowa waybara (tray, sieć).
-4. **Organizacja:** repo jako źródło prawdy, potem flakes, Home Manager i moduły.
+4. **Organizacja:** flakes i Home Manager są (w `/etc/nixos`); dalej podział na moduły.
 5. **Laptop 💻:** zasilanie, Wi-Fi, BT, touchpad, HiDPI, LUKS, backup (2026-11-25-04).

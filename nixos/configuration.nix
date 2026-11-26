@@ -58,6 +58,8 @@
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
+  
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   # List packages installed in system profile.
   # You can use https://search.nixos.org/ to find more packages (and options).
@@ -79,6 +81,7 @@
     playerctl
     hypridle   # bezczynność; startowany z hyprland.lua
     wlogout
+    git
   ];
 
    programs.vim = {

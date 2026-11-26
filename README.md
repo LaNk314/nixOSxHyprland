@@ -17,23 +17,25 @@ Plan rozbudowy: [docs/roadmap.md](docs/roadmap.md).
 
 | Warstwa | Komponent | Konfiguracja |
 |---|---|---|
-| System | NixOS 26.05, systemd-boot, NetworkManager | `nixos/configuration.nix` |
+| System | NixOS 26.05, systemd-boot, NetworkManager; flakes, nixpkgs przypięty w `flake.lock` (zamiast kanału) | `nixos/flake.nix`, `nixos/configuration.nix` |
 | Logowanie | greetd + tuigreet → `start-hyprland` | `services.greetd` |
 | Kompozytor | Hyprland 0.55.4 (config Lua), XWayland | `dotfiles/.config/hypr/hyprland.lua` |
 | Pasek | waybar | `dotfiles/.config/waybar/` |
-| Launcher | fuzzel (SUPER+R) | `local menu` w `hyprland.lua` |
-| Powiadomienia | mako | autostart |
+| Launcher | fuzzel (SUPER+R); config i kolory ze Stylixa | `programs.fuzzel` w `home.nix` |
+| Powiadomienia | mako (autostart); config i kolory ze Stylixa | `services.mako` w `home.nix` |
 | Tapeta | swaybg (`~/tapeta.jpg`) | autostart |
 | Zrzuty ekranu | grim + slurp → wl-copy (Print, SHIFT+Print) | |
 | Blokada ekranu | hyprlock (SUPER+L, `loginctl lock-session`), hypridle: blokada po 5 min; wygaszanie (DPMS) wyłączone w VM | `programs.hyprlock`, `dotfiles/.config/hypr/hyprlock.conf`, `hypridle.conf`; hypridle z autostartu, nie z systemd |
-| Menu zasilania | wlogout (SUPER+M, przycisk ⏻ w waybarze): zablokuj, wyloguj, uruchom ponownie, wyłącz; styl i ikony domyślne z pakietu | `dotfiles/.config/wlogout/layout` |
+| Menu zasilania | wlogout (SUPER+M, przycisk ⏻ w waybarze): zablokuj, wyloguj, uruchom ponownie, wyłącz; ikony z pakietu przez `~/.config/wlogout/icons` (HM) | `dotfiles/.config/wlogout/{layout,style.css}` |
 | Pliki | nautilus (SUPER+E) z gvfs (kosz, nośniki, sieć) i tumbler (miniatury), yazi (TUI) | `services.gvfs`, `services.tumbler` |
-| Terminal | kitty (SUPER+Q) | `dotfiles/.config/kitty/kitty.conf` |
+| Terminal | kitty (SUPER+Q), kolory z `include colors.conf` | `dotfiles/.config/kitty/kitty.conf` |
 | Przeglądarka | firefox | |
 | Klawisze multimedialne | wpctl (głośność), brightnessctl (jasność; w VM brak podświetlenia), playerctl (MPRIS: play/pause, next, prev) | `hyprland.lua`, skróty `XF86*` |
 | Dźwięk | pipewire + pulse | `services.pipewire` |
 | Grafika VM | virtio-gpu z virgl (`accel3d`), `egl-headless` + SPICE `127.0.0.1:5900`; podgląd: `virt-viewer -c qemu:///system nixos` | definicja domeny libvirt (`virsh dumpxml nixos`) |
 | Edytor | vim (domyślny) | `programs.vim`, `dotfiles/.vimrc` |
+| Wygląd | Stylix: paleta base16 **Everforest** (`everforest.yaml`), polaryzacja dark; GTK (adw-gtk3), Qt, kolory TTY, kursor Bibata-Modern-Classic 24, fonty Noto Sans/Serif, JetBrainsMono Nerd Font, Noto Color Emoji | `nixos/stylix.nix` |
+| Home Manager | moduł NixOS dla `lank`; generuje pliki kolorów i configi zarządzane przez Stylix, nie przejmuje ręcznych dotfiles | `nixos/home.nix` |
 | Dostęp | OpenSSH, bez roota, bez haseł | `services.openssh` |
 
 ```mermaid
@@ -48,7 +50,8 @@ flowchart LR
         hypr -. skróty .-> fuzzel & kitty & nautilus & grim[grim/slurp] & wlogout
         pw[pipewire] --- waybar
     end
-    cfg["/etc/nixos/configuration.nix"] -- nixos-rebuild switch --> VM
+    cfg["/etc/nixos: flake.nix<br/>configuration.nix, stylix.nix, home.nix"] -- nixos-rebuild switch --> VM
+    cfg -. "Home Manager: colors.*, GTK, mako, fuzzel" .-> hypr
 ```
 
 ## Szybki start
@@ -56,10 +59,12 @@ flowchart LR
 ```bash
 ssh nixos                                   # dostęp do VM
 sudoedit /etc/nixos/configuration.nix       # zmiana konfiguracji (vim z ~/.vimrc użytkownika)
-sudo nixos-rebuild switch                   # zastosowanie zmian (nowa generacja)
+sudo nixos-rebuild switch                   # zastosowanie zmian (nowa generacja); bierze /etc/nixos/flake.nix
+sudo nix flake update --flake /etc/nixos    # aktualizacja nixpkgs (potem rebuild)
 ```
 
 - Program bez modułu dopisz do `environment.systemPackages`. Gdy istnieje moduł `programs.X` lub `services.X` (sprawdź na [search.nixos.org/options](https://search.nixos.org/options)), użyj modułu.
+- **Kolory:** nie wpisuj wartości hex w configach. Używaj nazw base16: `c.base0D` (`hyprland.lua`), `$base0D` (`hyprlock.conf`), `@base0D` (`style.css` waybara i wlogoutu); kitty dołącza `colors.conf`. Pliki `colors.*` generuje HM z palety w `/etc/nixos/stylix.nix`; zmiana schematu to jedna linia `base16Scheme` + rebuild + przeładowanie programów.
 - `hyprland.lua` przeładowuje się automatycznie po zapisie. Zmiany w autostarcie (`hl.on("hyprland.start", …)`) działają dopiero po ponownym zalogowaniu.
 
 ## Backup i odtwarzanie
@@ -73,9 +78,10 @@ sudo nixos-rebuild switch                   # zastosowanie zmian (nowa generacja
 
   Odświeżenie kopii z hosta (nowy program: dopisz jego katalog do listy w `tar`):
   ```bash
-  scp nixos:/etc/nixos/{configuration,hardware-configuration}.nix nixos/
-  ssh nixos 'cd ~ && tar cf - --exclude="*.swp" .config/hypr .config/waybar .config/kitty .config/wlogout .vimrc' | tar xf - -C dotfiles
+  scp nixos:/etc/nixos/{configuration,hardware-configuration}.nix nixos:/etc/nixos/{flake.nix,flake.lock,home.nix,stylix.nix} nixos/
+  ssh nixos 'cd ~ && tar cf - --exclude="*.swp" --exclude="colors.*" --exclude=icons .config/hypr .config/waybar .config/kitty .config/wlogout .vimrc' | tar xf - -C dotfiles
   ```
+- **Wyłączenie flake'a:** przenieś `/etc/nixos/flake.nix` poza katalog, a `nixos-rebuild` wróci do kanału `nixos`.
 - **Wycofanie zmiany systemu:** wybierz poprzednią generację w menu systemd-boot albo uruchom `sudo nixos-rebuild switch --rollback`.
 - `hardware-configuration.nix` dotyczy tej VM. Na laptopie wygeneruj własny (`nixos-generate-config`).
 - **Definicja VM (libvirt):** kopia sprzed zmiany grafiki w `vm/nixos-domain-przed-virgl.xml`. Przywrócenie przy wyłączonej VM: `virsh -c qemu:///system define vm/nixos-domain-przed-virgl.xml`.
@@ -95,7 +101,11 @@ sudo nixos-rebuild switch                   # zastosowanie zmian (nowa generacja
 | `hyprctl dispatch dpms off` nie działa | Hyprland 0.55 (Lua): `hyprctl dispatch 'hl.dsp.dpms({ action = "off" })'` (`on`, bez argumentu: przełącz). |
 | hypridle nie startuje jako `services.hypridle` | Usługa czeka na `graphical-session.target`, którego `start-hyprland` nie uruchamia. Startuje z autostartu w `hyprland.lua`. |
 | hyprlock / hypridle: składnia configu | Nadal hyprlang (`.conf`), w przeciwieństwie do `hyprland.lua`. |
-| wlogout: własny `layout`, ale brak ikon | Ikony są przypisane do `label` (`lock`, `logout`, `reboot`, `shutdown`, `suspend`, `hibernate`) w domyślnym `style.css` pakietu. Nie zmieniaj `label`. Własny `style.css` musi wskazywać ikony w `/nix/store/…-wlogout-*/share/wlogout/icons`. |
+| wlogout: brak ikon | Ikony są przypisane w `style.css` do `#<label>` (`lock`, `logout`, `reboot`, `shutdown`), więc nie zmieniaj `label` w `layout`. Ścieżki wskazują `~/.config/wlogout/icons`, symlink z HM do ikon pakietu. |
 | Kopiowanie tekstu host↔VM | Wspólny schowek nie jest skonfigurowany. Używaj `ssh nixos` i `scp`. |
 | virt-viewer: „Connected to graphic server” bez obrazu | SPICE z `gl enable='yes'` nie działa ze sterownikiem NVIDII na hoście. Używaj `egl-headless` + zwykłego SPICE. |
 | Wolny obraz, `Renderer: virgl (LLVMPIPE …)` w logu Hyprlanda | virgl działa, ale QEMU na hoście renderuje programowo zamiast na GPU. Zob. zgłoszenie 2026-11-25-05. |
+| Po rebuildzie z nową paletą stare kolory | Programy czytają pliki przy starcie. Hyprland: zapisz `hyprland.lua` albo `hyprctl reload`; waybar: `pkill -SIGUSR2 waybar`; mako: `makoctl reload`; kitty: Ctrl+Shift+F5. |
+| Nie da się edytować `colors.*`, `~/.config/mako/config`, `fuzzel.ini`, `gtk-*/` | To symlinki HM do `/nix/store` (tylko do odczytu). Zmiany w `/etc/nixos/home.nix` lub `stylix.nix`. |
+| HM: aktywacja przerwana, „Existing file … would be clobbered” | Ustawione `home-manager.backupFileExtension = "hm-backup"`: kolidujący plik zostaje przemianowany na `*.hm-backup`. Sprawdź `journalctl -u home-manager-lank`. |
+| Aplikacja Qt bez motywu Kvantum | `QT_STYLE_OVERRIDE` jest tylko w `~/.config/environment.d` (systemd), nie w sesji Hyprlanda. Do rozwiązania przy pierwszej aplikacji Qt. |
