@@ -32,6 +32,8 @@ Cel:
 - 2026-11-26, po pierwszym wdrożeniu: ReGreet i Plymouth działają (plymouthd startuje i kończy się w journalu), ale pojawiły się dwa problemy:
   1. **Po zalogowaniu wyświetla się TTY (bash) zamiast Hyprlanda.** Log `/var/log/regreet/log` pokazuje `sess_id: None` i komunikat `No entry found; using default login shell of user: lank` (polecenie `["/run/current-system/sw/bin/bash"]`). Przy pierwszym starcie ReGreet nie ma `/var/lib/regreet/state.toml`, więc nie wybiera żadnej sesji. Bez wybrania sesji z listy uruchamia powłokę użytkownika.
   2. **Kursor jest odwrócony do góry nogami w ReGreet.** `cage` (wlroots) używa sprzętowego kursora na virtio-gpu z virgl. Hipoteza: znany problem z płaszczyzną kursora w wirtualnym GPU. Obejście: `WLR_NO_HARDWARE_CURSORS=1`. Hyprland (aquamarine, nie wlroots) nie ma tego problemu.
+- 2026-11-26, korekta pkt 2: kursor był odwrócony także w menu systemd-boot, więc nie odpowiadał za to cage. Po pełnym wyłączeniu VM i ponownym starcie QEMU kursor jest prosty. Przyczyną był stary obraz kursora w działającym procesie QEMU/SPICE (virtio-gpu + virgl), który przetrwał zwykły reboot gościa. `WLR_NO_HARDWARE_CURSORS=1` prawdopodobnie jest zbędne, do sprawdzenia przez usunięcie.
+- 2026-11-26: ReGreet zapamiętuje ostatnią sesję (`/var/lib/regreet/state.toml`: `lank = "Hyprland"`). Log logowania o 13:08 pokazuje `sess_id: Some("Hyprland")` bez wyboru przez użytkownika, czyli wystarczy podać hasło. Pierwszy raz sesję trzeba było wybrać ręcznie, bo nie było jeszcze pliku stanu.
 
 ## Przyczyna źródłowa
 
