@@ -82,7 +82,14 @@
     hypridle   # bezczynność; startowany z hyprland.lua
     wlogout
     git
+    hyprpolkitagent
+    libsecret
+    seahorse
   ];
+
+  environment.pathsToLink = [ "/libexec" ];
+
+  services.gnome.gnome-keyring.enable = true;
 
    programs.vim = {
      enable = true;

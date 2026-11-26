@@ -369,6 +369,7 @@ hl.on("hyprland.start", function()
   hl.exec_cmd("mako")
   hl.exec_cmd("swaybg -i ~/tapeta.jpg -m fill")
   hl.exec_cmd("hypridle")   -- bezczynność: blokada, wygaszanie (graphical-session.target nieaktywny, więc nie przez systemd)
+  hl.exec_cmd("/run/current-system/sw/libexec/hyprpolkitagent")
 end)
 
 hl.bind("Print", hl.dsp.exec_cmd('grim -g "$(slurp)" - | wl-copy'))

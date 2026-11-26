@@ -10,8 +10,8 @@ Kolumna **NixOS** podaje moduł, jeśli istnieje. Bez modułu wystarczy pakiet w
 | | Funkcja | Popularne wybory | NixOS | Uwagi |
 |---|---|---|---|---|
 | ✅ | Ekran logowania | greetd + tuigreet | `services.greetd` | alternatywy graficzne: regreet, SDDM |
-| ⬜ | Polkit agent (okienka z hasłem dla aplikacji GUI) | hyprpolkitagent | `security.polkit.enable` + pakiet | bez niego np. montowanie w nautilusie albo nm-connection-editor nie zapyta o hasło |
-| ⬜ | Keyring (hasła Wi-Fi, przeglądarki, git) | gnome-keyring | `services.gnome.gnome-keyring.enable`, `security.pam.services.greetd.enableGnomeKeyring` | odblokowanie przy logowaniu |
+| ✅ | Polkit agent (okienka z hasłem dla aplikacji GUI) | hyprpolkitagent | pakiet + `environment.pathsToLink = [ "/libexec" ]`, autostart w `hyprland.lua` (polkitd włącza `programs.hyprland`) | usługa systemd agenta wymaga `graphical-session.target`, stąd autostart |
+| ✅ | Keyring (hasła Wi-Fi, przeglądarki, git) | gnome-keyring | `services.gnome.gnome-keyring.enable` (PAM `greetd` włącza się sam) | odblokowanie przy logowaniu; agent SSH osobno (sekcja niżej) |
 | ✅ | Portale XDG (udostępnianie ekranu, okna wyboru plików) | xdg-desktop-portal-hyprland + -gtk | ustawia `programs.hyprland` | sprawdzić okno wyboru plików (portal gtk) |
 | ✅ | Blokada ekranu | hyprlock | `programs.hyprlock.enable` | SUPER+L; moduł dodaje PAM |
 | 🔶 | Bezczynność: wygaszanie, blokada, uśpienie | hypridle | pakiet + autostart (`services.hypridle` wymaga `graphical-session.target`) | blokada po 5 min; DPMS i suspend 💻 zakomentowane |

@@ -26,6 +26,8 @@ Plan rozbudowy: [docs/roadmap.md](docs/roadmap.md).
 | Tapeta | swaybg (`~/tapeta.jpg`) | autostart |
 | Zrzuty ekranu | grim + slurp → wl-copy (Print, SHIFT+Print) | |
 | Blokada ekranu | hyprlock (SUPER+L, `loginctl lock-session`), hypridle: blokada po 5 min; wygaszanie (DPMS) wyłączone w VM | `programs.hyprlock`, `dotfiles/.config/hypr/hyprlock.conf`, `hypridle.conf`; hypridle z autostartu, nie z systemd |
+| Agent polkit | hyprpolkitagent (okienko z hasłem dla `pkexec` i aplikacji GUI), autostart przez `/run/current-system/sw/libexec/hyprpolkitagent` | pakiet + `environment.pathsToLink = [ "/libexec" ]`; `hyprland.lua` |
+| Keyring | gnome-keyring: hasła aplikacji (libsecret), keyring `login` odblokowywany hasłem z ekranu logowania (PAM `greetd`); `secret-tool`, seahorse | `services.gnome.gnome-keyring.enable` (włącza też PAM dla `login` i `greetd`) |
 | Menu zasilania | wlogout (SUPER+M, przycisk ⏻ w waybarze): zablokuj, wyloguj, uruchom ponownie, wyłącz; ikony z pakietu przez `~/.config/wlogout/icons` (HM) | `dotfiles/.config/wlogout/{layout,style.css}` |
 | Pliki | nautilus (SUPER+E) z gvfs (kosz, nośniki, sieć) i tumbler (miniatury), yazi (TUI) | `services.gvfs`, `services.tumbler` |
 | Terminal | kitty (SUPER+Q), kolory z `include colors.conf` | `dotfiles/.config/kitty/kitty.conf` |
@@ -100,6 +102,9 @@ sudo nix flake update --flake /etc/nixos    # aktualizacja nixpkgs (potem rebuil
 | Po wygaszeniu ekranu (DPMS off/on) virt-viewer nie pokazuje obrazu, Hyprland działa | virgl + egl-headless nie wznawia obrazu po DPMS. Restart sesji: `ssh nixos 'loginctl terminate-user lank'`. Dlatego listener DPMS w `hypridle.conf` jest w VM zakomentowany. |
 | `hyprctl dispatch dpms off` nie działa | Hyprland 0.55 (Lua): `hyprctl dispatch 'hl.dsp.dpms({ action = "off" })'` (`on`, bez argumentu: przełącz). |
 | hypridle nie startuje jako `services.hypridle` | Usługa czeka na `graphical-session.target`, którego `start-hyprland` nie uruchamia. Startuje z autostartu w `hyprland.lua`. |
+| Brak `/run/current-system/sw/libexec/…` | NixOS domyślnie nie linkuje `libexec` pakietów. Potrzebne `environment.pathsToLink = [ "/libexec" ];`. |
+| `pgrep hyprpolkitagent` nic nie zwraca, choć proces działa | Nix uruchamia program przez wrapper `.…-wrapped`, a `pgrep` bez `-f` porównuje nazwę procesu skróconą do 15 znaków (`.hyprpolkitagen`). Używaj `pgrep -af`. |
+| Okienko z prośbą o hasło do keyringu po zalogowaniu | Hasło keyringu `login` różni się od hasła konta albo PAM greetd nie ma `pam_gnome_keyring` (`grep keyring /etc/pam.d/greetd`). Hasło keyringu zmienisz w seahorse. |
 | hyprlock / hypridle: składnia configu | Nadal hyprlang (`.conf`), w przeciwieństwie do `hyprland.lua`. |
 | wlogout: brak ikon | Ikony są przypisane w `style.css` do `#<label>` (`lock`, `logout`, `reboot`, `shutdown`), więc nie zmieniaj `label` w `layout`. Ścieżki wskazują `~/.config/wlogout/icons`, symlink z HM do ikon pakietu. |
 | Kopiowanie tekstu host↔VM | Wspólny schowek nie jest skonfigurowany. Używaj `ssh nixos` i `scp`. |
