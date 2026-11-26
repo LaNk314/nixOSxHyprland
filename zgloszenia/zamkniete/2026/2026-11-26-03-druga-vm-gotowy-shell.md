@@ -1,13 +1,13 @@
 ---
 id: 2026-11-26-03
 tytul: Druga VM (nixos-shell) do testu gotowego shella, zamrożenie VM nixos
-status: w-toku
+status: zamkniete
 typ: zmiana
 priorytet: sredni
 otwarte: 2026-11-26
-zamkniete:
-przyczyna:
-powiazane: []
+zamkniete: 2026-11-26
+przyczyna: Eksperyment z gotowym shellem wymagał osobnej VM, żeby nie ryzykować dopracowanej konfiguracji nixos.
+powiazane: [2026-11-26-04]
 ---
 
 ## Opis
@@ -44,7 +44,11 @@ Nie dotyczy (zmiana).
 - [x] Nowy `/etc/machine-id` w klonie (`systemd-machine-id-setup` w VM)
 - [x] Uruchomić klon, odczytać IP (`192.168.122.179`), dodać alias `ssh nixos-shell`
 - [x] Hostname klona `nixos-shell` (`networking.hostName` w VM, `nixos-rebuild switch --flake /etc/nixos#nixos`)
-- [ ] Ustalić sposób przechowywania kopii configu klona w repo (katalog lub gałąź)
-- [ ] Wybrać i zainstalować shell (osobne zgłoszenie)
+- [x] Kopie configu klona: gałąź `shell` (`main` opisuje zamrożoną VM `nixos`)
+- [x] Wybór i instalacja shella: osobne zgłoszenie 2026-11-26-04 (gałąź `shell`)
 
 ## Wnioski
+
+- Klonowanie przez `virt-clone` działa bez roota, bo idzie przez API libvirt. Narzędzia libguestfs (`virt-sysprep`, `virt-customize`) potrzebują dostępu do pliku obrazu, czyli sudo na hoście.
+- `sudo` z `!` w Claude Code nie zadziała, bo nie ma TTY. Polecenia z hasłem użytkownik wykonuje we własnym terminalu.
+- Po zmianie hostname na klonie przebudowa wymaga `--flake /etc/nixos#nixos`, bo nazwa konfiguracji w flake'u już nie odpowiada hostname.
