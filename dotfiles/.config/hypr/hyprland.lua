@@ -37,8 +37,8 @@ hl.monitor({
 
 -- Set programs that you use
 local terminal    = "kitty"
-local fileManager = "dolphin"
-local menu        = "hyprlauncher"
+local fileManager = "nautilus"
+local menu        = "fuzzel"
 
 
 -------------------
@@ -263,7 +263,7 @@ local mainMod = "SUPER" -- Sets "Windows" key as main modifier
 
 -- Example binds, see https://wiki.hypr.land/Configuring/Basics/Binds/ for more
 hl.bind(mainMod .. " + Q", hl.dsp.exec_cmd(terminal))
-local closeWindowBind = hl.bind(mainMod .. " + C", hl.dsp.window.close())
+local closeWindowBind = hl.bind(mainMod .. " + X", hl.dsp.window.close())
 -- closeWindowBind:set_enabled(false)
 hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
@@ -369,9 +369,5 @@ hl.on("hyprland.start", function()
   hl.exec_cmd("swaybg -i ~/tapeta.jpg -m fill")
 end)
 
-hl.bind("SUPER+D", hl.dsp.exec_cmd("fuzzel"))
-
 hl.bind("Print", hl.dsp.exec_cmd('grim -g "$(slurp)" - | wl-copy'))
 hl.bind("SHIFT+Print", hl.dsp.exec_cmd("grim - | wl-copy"))
-
-hl.bind("SUPER+E", hl.dsp.exec_cmd("nautilus"))

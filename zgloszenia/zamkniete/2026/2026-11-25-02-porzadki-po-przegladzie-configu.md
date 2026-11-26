@@ -1,12 +1,12 @@
 ---
 id: 2026-11-25-02
 tytul: Porządki w konfiguracji po pierwszym przeglądzie
-status: nowe
+status: zamkniete
 typ: zmiana
 priorytet: sredni
 otwarte: 2026-11-25
-zamkniete:
-przyczyna:
+zamkniete: 2026-11-26
+przyczyna: Wygenerowany config wskazywał niezainstalowane programy, brakowało gvfs oraz narzędzi do klawiszy multimedialnych.
 powiazane: [2026-11-25-01]
 ---
 
@@ -27,10 +27,17 @@ Przegląd `configuration.nix` i `hyprland.lua` przez SSH (2026-11-25) wykazał n
 
 ## Rozwiązanie
 
-- [ ] `services.gvfs.enable = true;` (+ ewentualnie `services.tumbler.enable` dla miniatur)
-- [ ] Usunąć `wofi` z `systemPackages` albo świadomie go zostawić
-- [ ] W `hyprland.lua`: `fileManager = "nautilus"`, `menu = "fuzzel"`, usunąć zdublowane `SUPER+E`/`SUPER+D` z końca pliku
-- [ ] Dodać `brightnessctl` i `playerctl` (przed migracją na laptopa)
-- [ ] `sudo nixos-rebuild switch`, odświeżyć kopie w repo
+- [x] `services.gvfs.enable = true;` (+ ewentualnie `services.tumbler.enable` dla miniatur)
+- [x] Usunąć `wofi` z `systemPackages` albo świadomie go zostawić
+- [x] W `hyprland.lua`: `fileManager = "nautilus"`, `menu = "fuzzel"`, usunąć zdublowane `SUPER+E`/`SUPER+D` z końca pliku
+- [x] Dodać `brightnessctl` i `playerctl` (przed migracją na laptopa)
+- [x] `sudo nixos-rebuild switch`, odświeżyć kopie w repo
+
+## Przebieg
+
+- 2026-11-26: Zmiany wprowadzone w VM (gvfs + tumbler, usunięty wofi, `fileManager`/`menu` poprawione, usunięte zdublowane skróty, dodane brightnessctl i playerctl). Przy okazji: firefox, SUPER+X zamyka okno (zamiast SUPER+C), `kitty.conf` z `confirm_os_window_close 0`. Kopie w repo odświeżone.
+- Launcher fuzzel jest teraz pod SUPER+R (`menu`). SUPER+D nie ma przypisania.
 
 ## Wnioski
+
+- `sudoedit` zapisuje plik docelowy dopiero po zamknięciu vima, więc samo `:w` nie wystarcza przed `nixos-rebuild`. Dopisane do Troubleshooting w README.

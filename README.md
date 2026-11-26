@@ -21,12 +21,14 @@ Plan rozbudowy: [docs/roadmap.md](docs/roadmap.md).
 | Logowanie | greetd + tuigreet → `start-hyprland` | `services.greetd` |
 | Kompozytor | Hyprland 0.55.4 (config Lua), XWayland | `dotfiles/.config/hypr/hyprland.lua` |
 | Pasek | waybar | `dotfiles/.config/waybar/` |
-| Launcher | fuzzel (SUPER+D); wofi zainstalowane, nieużywane | |
+| Launcher | fuzzel (SUPER+R) | `local menu` w `hyprland.lua` |
 | Powiadomienia | mako | autostart |
 | Tapeta | swaybg (`~/tapeta.jpg`) | autostart |
 | Zrzuty ekranu | grim + slurp → wl-copy (Print, SHIFT+Print) | |
-| Pliki | nautilus (SUPER+E), yazi (TUI) | |
-| Terminal | kitty | |
+| Pliki | nautilus (SUPER+E) z gvfs (kosz, nośniki, sieć) i tumbler (miniatury), yazi (TUI) | `services.gvfs`, `services.tumbler` |
+| Terminal | kitty (SUPER+Q) | `dotfiles/.config/kitty/kitty.conf` |
+| Przeglądarka | firefox | |
+| Klawisze multimedialne | wpctl (głośność), brightnessctl (jasność; w VM brak podświetlenia), playerctl (MPRIS: play/pause, next, prev) | `hyprland.lua`, skróty `XF86*` |
 | Dźwięk | pipewire + pulse | `services.pipewire` |
 | Grafika VM | virtio-gpu z virgl (`accel3d`), `egl-headless` + SPICE `127.0.0.1:5900`; podgląd: `virt-viewer -c qemu:///system nixos` | definicja domeny libvirt (`virsh dumpxml nixos`) |
 | Edytor | vim (domyślny) | `programs.vim`, `dotfiles/.vimrc` |
@@ -83,6 +85,7 @@ sudo nixos-rebuild switch                   # zastosowanie zmian (nowa generacja
 | `sudo vim` bez kolorowania składni po podlinkowaniu `.vimrc` do `/root` | Gdy istnieje vimrc, vim nie wczytuje `defaults.vim`. Dodaj `syntax on` do vimrc. Pliki systemowe edytuj przez `sudoedit`. |
 | Rozdzielczość 800x600 w VM | Ustaw tryb w bloku `hl.monitor({ … mode = "1920x1080@60", scale = 1 })`. Dostępne tryby: `hyprctl monitors` lub `cat /sys/class/drm/card*-*/modes` |
 | Nie ma `hyprland.conf` | Hyprland ≥0.55 używa `hyprland.lua`, a składnia hyprlang jest przestarzała. |
+| `nixos-rebuild` nie widzi zmian po `:w` w vimie | `sudoedit` edytuje kopię tymczasową i przenosi ją do `/etc/nixos/` dopiero po zamknięciu edytora. Zapisz i wyjdź (`:wq`), potem uruchom rebuild. |
 | Czarny ekran po zmianie greetd | Przełącz na inny TTY (Ctrl+Alt+F2, w virt-managerze „Send key”) albo wybierz poprzednią generację w bootloaderze. |
 | Kopiowanie tekstu host↔VM | Wspólny schowek nie jest skonfigurowany. Używaj `ssh nixos` i `scp`. |
 | virt-viewer: „Connected to graphic server” bez obrazu | SPICE z `gl enable='yes'` nie działa ze sterownikiem NVIDII na hoście. Używaj `egl-headless` + zwykłego SPICE. |

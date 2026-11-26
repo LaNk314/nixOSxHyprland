@@ -61,21 +61,23 @@
 
   # List packages installed in system profile.
   # You can use https://search.nixos.org/ to find more packages (and options).
-   environment.systemPackages = with pkgs; [
-     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-     wget
-     kitty
-     wofi
-     waybar
-     fuzzel
-     mako
-     libnotify
-     swaybg
-     grim slurp
-     wl-clipboard
-     yazi
-     nautilus
-   ];
+  environment.systemPackages = with pkgs; [
+    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    wget
+    kitty
+    waybar
+    fuzzel
+    mako
+    libnotify
+    swaybg
+    grim slurp
+    wl-clipboard
+    yazi
+    nautilus
+    firefox
+    brightnessctl
+    playerctl
+  ];
 
    programs.vim = {
      enable = true;
@@ -125,6 +127,10 @@
 		PasswordAuthentication = false;
 	};
  };
+
+  services.gvfs.enable = true;
+
+  services.tumbler.enable = true;
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
