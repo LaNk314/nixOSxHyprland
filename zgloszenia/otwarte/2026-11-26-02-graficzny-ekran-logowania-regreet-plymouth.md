@@ -29,6 +29,9 @@ Cel:
 - Dodatkowo **Plymouth** (graficzny ekran startu). Stylix ma target `plymouth`.
 - Stan VM: sesje Wayland pochodzą z `programs.hyprland` (`hyprland.desktop` → `start-hyprland`, `hyprland-uwsm.desktop`). ReGreet pokaże obie, a domyślna ma być „Hyprland”.
 - Przy okazji: `~/tapeta.jpg` nie istnieje w VM, więc swaybg z autostartu nic nie wyświetla. Stylix nie ma ustawionego `image`, więc ReGreet dostanie tło jednolite z palety.
+- 2026-11-26, po pierwszym wdrożeniu: ReGreet i Plymouth działają (plymouthd startuje i kończy się w journalu), ale pojawiły się dwa problemy:
+  1. **Po zalogowaniu wyświetla się TTY (bash) zamiast Hyprlanda.** Log `/var/log/regreet/log` pokazuje `sess_id: None` i komunikat `No entry found; using default login shell of user: lank` (polecenie `["/run/current-system/sw/bin/bash"]`). Przy pierwszym starcie ReGreet nie ma `/var/lib/regreet/state.toml`, więc nie wybiera żadnej sesji. Bez wybrania sesji z listy uruchamia powłokę użytkownika.
+  2. **Kursor jest odwrócony do góry nogami w ReGreet.** `cage` (wlroots) używa sprzętowego kursora na virtio-gpu z virgl. Hipoteza: znany problem z płaszczyzną kursora w wirtualnym GPU. Obejście: `WLR_NO_HARDWARE_CURSORS=1`. Hyprland (aquamarine, nie wlroots) nie ma tego problemu.
 
 ## Przyczyna źródłowa
 
