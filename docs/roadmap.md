@@ -13,8 +13,8 @@ Kolumna **NixOS** podaje moduł, jeśli istnieje. Bez modułu wystarczy pakiet w
 | ⬜ | Polkit agent (okienka z hasłem dla aplikacji GUI) | hyprpolkitagent | `security.polkit.enable` + pakiet | bez niego np. montowanie w nautilusie albo nm-connection-editor nie zapyta o hasło |
 | ⬜ | Keyring (hasła Wi-Fi, przeglądarki, git) | gnome-keyring | `services.gnome.gnome-keyring.enable`, `security.pam.services.greetd.enableGnomeKeyring` | odblokowanie przy logowaniu |
 | ✅ | Portale XDG (udostępnianie ekranu, okna wyboru plików) | xdg-desktop-portal-hyprland + -gtk | ustawia `programs.hyprland` | sprawdzić okno wyboru plików (portal gtk) |
-| ⬜ | Blokada ekranu | hyprlock | `programs.hyprlock.enable` | |
-| ⬜ | Bezczynność: wygaszanie, blokada, uśpienie | hypridle | `services.hypridle.enable` | |
+| ✅ | Blokada ekranu | hyprlock | `programs.hyprlock.enable` | SUPER+L; moduł dodaje PAM |
+| 🔶 | Bezczynność: wygaszanie, blokada, uśpienie | hypridle | pakiet + autostart (`services.hypridle` wymaga `graphical-session.target`) | blokada po 5 min; DPMS i suspend 💻 zakomentowane |
 | ⬜ | Menu zasilania (wyloguj / restart / wyłącz) | wlogout, skrypt w fuzzel | pakiet | dziś jest tylko SUPER+M (exit) |
 | ⬜ | Automatyczny start aplikacji XDG (`~/.config/autostart`) | — | `hl.exec_cmd` w `hyprland.start` | Hyprland nie obsługuje tego sam |
 

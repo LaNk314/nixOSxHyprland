@@ -77,6 +77,7 @@
     firefox
     brightnessctl
     playerctl
+    hypridle   # bezczynność; startowany z hyprland.lua
   ];
 
    programs.vim = {
@@ -86,6 +87,9 @@
 
   programs.hyprland.enable = true;
   programs.hyprland.xwayland.enable = true;
+
+  # Blokada ekranu. Moduł instaluje hyprlock i dodaje usługę PAM "hyprlock" (bez niej nie da się odblokować).
+  programs.hyprlock.enable = true;
 
   hardware.graphics.enable = true;
 
