@@ -1,7 +1,7 @@
 ---
 id: 2026-11-26-04
 tytul: Gotowy shell DankMaterialShell na VM nixos-shell (gałąź shell)
-status: nowe
+status: w-toku
 typ: zmiana
 priorytet: sredni
 otwarte: 2026-11-26
@@ -36,6 +36,16 @@ Ryzyka do sprawdzenia:
 - Konflikty z obecnymi komponentami: waybar, mako (powiadomienia), fuzzel, swaybg, hyprpolkitagent, wlogout. DMS ma własne odpowiedniki, więc nasze trzeba wyłączyć w autostarcie i `home.nix`.
 - Kolory: DMS ma własny motyw i matugen. Na czas eksperymentu zasada „tylko Stylix” nie obejmuje shella.
 
+### Przebieg
+
+- 2026-11-26: Ustawiono `programs.dms-shell.enable = true` i przebudowano system. Usługa `dms` jest `inactive (dead)`, bo plik unit ma `Requisite=graphical-session.target`, a w sesji spod greetd ten target jest nieaktywny. Usługa ma też `Type=dbus` z `BusName=org.freedesktop.Notifications`, więc DMS zastępuje mako.
+- 2026-11-26: Ustawiono `programs.dms-shell.systemd.enable = false`. W `hyprland.lua` autostart `dms run` zastąpił waybar, mako i swaybg; hypridle i hyprpolkitagent zostały. DMS działa (quickshell 0.3.0).
+- 2026-11-27: Pierwsze wrażenia użytkownika: DMS nie obsługuje ekranu logowania, ekranu pod SUPER+M ani wyglądu kafelkowania. Wyjaśnienie:
+  - DMS to warstwa widżetów (layer-shell) nad kompozytorem. Ramki, odstępy, zaokrąglenia i animacje okien ustawia Hyprland w `hyprland.lua`.
+  - Ekran logowania działa przed sesją użytkownika, więc potrzebny jest osobny greeter: `services.displayManager.dms-greeter` jest w nixpkgs.
+  - SUPER+M i SUPER+R nadal wywołują wlogout i fuzzel. DMS ma odpowiedniki dostępne przez IPC.
+- 2026-11-27: Cele IPC (`dms ipc <cel> <funkcja>`) w 1.4.6: `spotlight`, `launcher`, `powermenu`, `lock`, `notifications`, `control-center`, `settings`, `clipboard`, `hypr` (toggleOverview, toggleBinds), `wallpaper`, `night`, `processlist`, `audio`, `brightness`, `mpris`, `keybinds` i inne.
+
 ## Przyczyna źródłowa
 
 Nie dotyczy (zmiana).
@@ -44,8 +54,12 @@ Nie dotyczy (zmiana).
 
 - [ ] Odświeżyć w gałęzi `shell` kopię configu z `nixos-shell` (punkt wyjścia)
 - [ ] `programs.dms-shell.enable = true;` w `configuration.nix`, przebudowa `--flake /etc/nixos#nixos`
-- [ ] Sprawdzić start DMS (`systemctl --user status dms`, `graphical-session.target`); w razie potrzeby autostart w `hyprland.lua`
-- [ ] Wyłączyć zdublowane komponenty (waybar, mako, swaybg, …) i dodać skróty DMS (launcher, panel, blokada)
+- [x] Start DMS: `systemd.enable = false`, autostart `dms run` w `hyprland.lua`
+- [x] Wyłączyć waybar, mako i swaybg
+- [ ] Skróty DMS: launcher, menu zasilania, blokada, powiadomienia, ustawienia, schowek, overview
+- [ ] Blokada i bezczynność: hyprlock/hypridle czy `dms ipc lock lock`
+- [ ] Wygląd okien w Hyprlandzie (ramki, zaokrąglenia, animacje) dopasowany do DMS
+- [ ] Rozważyć dms-greeter zamiast ReGreet
 - [ ] Przetestować obszary robocze, powiadomienia, panel ustawień, blokadę ekranu
 - [ ] Ocena i decyzja: zostajemy przy DMS (scalenie do `main`), inny shell albo powrót do ręcznej konfiguracji
 
