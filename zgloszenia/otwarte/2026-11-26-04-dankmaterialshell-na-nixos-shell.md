@@ -45,6 +45,11 @@ Ryzyka do sprawdzenia:
   - Ekran logowania działa przed sesją użytkownika, więc potrzebny jest osobny greeter: `services.displayManager.dms-greeter` jest w nixpkgs.
   - SUPER+M i SUPER+R nadal wywołują wlogout i fuzzel. DMS ma odpowiedniki dostępne przez IPC.
 - 2026-11-27: Cele IPC (`dms ipc <cel> <funkcja>`) w 1.4.6: `spotlight`, `launcher`, `powermenu`, `lock`, `notifications`, `control-center`, `settings`, `clipboard`, `hypr` (toggleOverview, toggleBinds), `wallpaper`, `night`, `processlist`, `audio`, `brightness`, `mpris`, `keybinds` i inne.
+- 2026-11-27: Blokada: SUPER+L wywołuje `dms ipc lock lock`, hypridle usunięty z autostartu. DMS ma `loginctlLockIntegration: true`, więc wcześniej `loginctl lock-session` uruchamiał dwie blokady naraz. Blokada po bezczynności w DMS (`acLockTimeout`, `lockBeforeSuspend`) nie zapisała się, trzeba ją ustawić ponownie.
+- 2026-11-27: ReGreet zastąpiony przez `services.displayManager.dms-greeter` (`compositor.name = "hyprland"`, `configHome = "/home/lank"`). Działa, a keyring nadal odblokowuje się przez PAM `greetd` („gnome-keyring-daemon started properly and unlocked keyring”). Problemy:
+  - Kursor w greeterze jest domyślny. Greeter działa jako użytkownik systemowy `dms-greeter`, a motyw kursora ze Stylixa jest tylko w profilu Home Managera użytkownika `lank`: `/run/current-system/sw/share/icons` zawiera wyłącznie `hicolor` i `locolor`.
+  - Po zalogowaniu na chwilę widać tty, a potem domyślną tapetę Hyprlanda, zanim DMS narysuje swoją. Tty pojawia się, bo Hyprland greetera kończy pracę przed startem sesji (cecha greetd). Tapeta to `force_default_wallpaper = -1` i `disable_hyprland_logo = false` w `hyprland.lua`.
+  - Skrypt `dms-greeter` (1.4.6) generuje config Hyprlanda w **hyprlang**. Jeśli `customConfig` jest ustawione, dopisuje do niego tylko `exec-once`. Domyślnych `env = DMS_RUN_GREETER,1` i `misc { disable_hyprland_logo }` trzeba wtedy dodać samemu.
 
 ## Przyczyna źródłowa
 
@@ -57,9 +62,12 @@ Nie dotyczy (zmiana).
 - [x] Start DMS: `systemd.enable = false`, autostart `dms run` w `hyprland.lua`
 - [x] Wyłączyć waybar, mako i swaybg
 - [ ] Skróty DMS: launcher, menu zasilania, blokada, powiadomienia, ustawienia, schowek, overview
-- [ ] Blokada i bezczynność: hyprlock/hypridle czy `dms ipc lock lock`
+- [x] Blokada: DMS (`dms ipc lock lock`), hypridle usunięty z autostartu
+- [ ] Blokada po bezczynności i przed uśpieniem w ustawieniach DMS
 - [ ] Wygląd okien w Hyprlandzie (ramki, zaokrąglenia, animacje) dopasowany do DMS
-- [ ] Rozważyć dms-greeter zamiast ReGreet
+- [x] dms-greeter zamiast ReGreet
+- [ ] Kursor ze Stylixa w greeterze (`compositor.customConfig`)
+- [ ] Bez domyślnej tapety Hyprlanda przy starcie sesji (`misc` w `hyprland.lua`)
 - [ ] Przetestować obszary robocze, powiadomienia, panel ustawień, blokadę ekranu
 - [ ] Ocena i decyzja: zostajemy przy DMS (scalenie do `main`), inny shell albo powrót do ręcznej konfiguracji
 
